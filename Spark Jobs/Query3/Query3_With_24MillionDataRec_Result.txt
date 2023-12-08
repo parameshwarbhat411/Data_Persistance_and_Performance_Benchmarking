@@ -1,0 +1,137 @@
+The Python script is run on HADOOP cluster deployed on Google Cloud DataProc with the below command
+
+	gcloud dataproc jobs submit pyspark gs://rs-bucket-dataproc1/notebooks/jupyter/Query3_With_24Million.py  --cluster polyglot   --region us-central1   --properties spark.jars.packages=ch.cern.sparkmeasure:spark-	measure_2.12:0.17
+
+The python script is stored in Google's compute engine bucket
+
+The Python script Query1_With_24Million.py is designed for processing and analyzing a large dataset using Apache Spark. It focuses on reading a dataset, performing SQL queries, and measuring the performance of these operations. Here's an overview of its functionality and the metrics it uses:
+
+Functionality Overview:
+	1. Spark Session Initialization: The script starts by initializing a Spark session, which is the entry point for using Spark's DataFrame API. This session is named "MyApp".
+	2. Reading Data: It reads a CSV file from the Hadoop Distributed File System (HDFS). The file is a dataset related to Yellow Taxi Trip data. The script infers the schema of the CSV file automatically and treats 	the first row as headers.
+	3. Data Processing with SQL: The script then creates a temporary view of the data, allowing it to run SQL queries directly on the dataset. The specific SQL query executed fetchs data where pickup and drop off 	location are same and where trip distance is less than 1 mile.
+	4. Result Display: After executing the SQL query, the results are displayed using the show() function. This is a common method for quickly inspecting the output of a DataFrame in Spark.
+
+
+Performance Metrics:
+
+	Scheduling Mode: Set to FAIR, which ensures fair resource sharing among all running jobs.
+
+	Degree of Parallelism: The default degree of parallelism is 4, meaning the tasks are distributed across four threads.
+	
+	Stage Metrics:
+		Number of Stages (3): The job is divided into three stages.
+		Number of Tasks (37): A total of 37 tasks were executed.
+		Elapsed Time (56 s): Total time taken for job completion.
+		Stage Duration (1.7 min): Cumulative time for all stages.
+		Executor Run Time (3.4 min): Time spent by executors running tasks.
+		Executor CPU Time (3.0 min): CPU time consumed by executors.
+		Executor Deserialize Time (1 s): Time taken for data deserialization.
+		JVM GC Time (2 s): Time spent in Java Garbage Collection, indicating memory management.
+	Shuffle Metrics:
+		Shuffle Write Time (2 s): Time taken for shuffle write operations.
+		Shuffle Read/Write Data: Details the amount of data read and written during shuffle operations.
+		Shuffle Records: Shows the number of records read and written for shuffling.
+	Resource Utilization:
+		Disk/Memory Bytes Spilled: No spillage of data to disk or memory, indicating efficient memory management.
+		Peak Execution Memory: The highest amount of memory used during execution.
+	Data Size and IO Metrics:
+		Records Read (30,859,625): Total number of records processed.
+		Bytes Read (4.0 GB): Total data read by the job.
+	
+Below is the result from the script:
+
+"""
+	+--------+--------------------+---------------------+---------------+-------------+----------+------------------+------------+------------+------------+-----------+-----+-------+----------+------------+---------------------+------------+--------------------+
+	|VendorID|tpep_pickup_datetime|tpep_dropoff_datetime|passenger_count|trip_distance|RatecodeID|store_and_fwd_flag|PULocationID|DOLocationID|payment_type|fare_amount|extra|mta_tax|tip_amount|tolls_amount|improvement_surcharge|total_amount|congestion_surcharge|
+	+--------+--------------------+---------------------+---------------+-------------+----------+------------------+------------+------------+------------+-----------+-----+-------+----------+------------+---------------------+------------+--------------------+
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	|       2|02/09/2020 02:15:...| 02/09/2020 02:16:...|              3|          0.0|         5|                 N|           1|           1|           1|       78.0|  0.0|    0.0|       0.0|         0.0|                  0.3|        78.3|                 0.0|
+	+--------+--------------------+---------------------+---------------+-------------+----------+------------------+------------+------------+------------+-----------+-----+-------+----------+------------+---------------------+------------+--------------------+
+	only showing top 20 rows
+
+	23/12/02 18:51:42 WARN package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+	23/12/02 18:51:42 WARN StageMetrics: Stage metrics data refreshed into temp view PerfStageMetrics
+
+	Scheduling mode = FAIR
+	Spark Context default degree of parallelism = 4
+	Aggregated Spark stage metrics:
+	numStages => 3
+	numTasks => 37
+	elapsedTime => 56326 (56 s)
+	stageDuration => 103937 (1.7 min)
+	executorRunTime => 202815 (3.4 min)
+	executorCpuTime => 181324 (3.0 min)
+	executorDeserializeTime => 1387 (1 s)
+	executorDeserializeCpuTime => 569 (0.6 s)
+	resultSerializationTime => 2 (2 ms)
+	jvmGCTime => 1570 (2 s)
+	shuffleFetchWaitTime => 0 (0 ms)
+	shuffleWriteTime => 2415 (2 s)
+	resultSize => 38408 (37.0 KB)
+	diskBytesSpilled => 0 (0 Bytes)
+	memoryBytesSpilled => 0 (0 Bytes)
+	peakExecutionMemory => 738197408
+	recordsRead => 30859625
+	bytesRead => 4790756626 (4.0 GB)
+	recordsWritten => 0
+	bytesWritten => 0 (0 Bytes)
+	shuffleRecordsRead => 6203408
+	shuffleTotalBlocksFetched => 38
+	shuffleLocalBlocksFetched => 19
+	shuffleRemoteBlocksFetched => 19
+	shuffleTotalBytesRead => 58088678 (55.0 MB)
+	shuffleLocalBytesRead => 29049165 (27.0 MB)
+	shuffleRemoteBytesRead => 29039513 (27.0 MB)
+	shuffleRemoteBytesReadToDisk => 0 (0 Bytes)
+	shuffleBytesWritten => 327453538 (312.0 MB)
+	shuffleRecordsWritten => 30859625
+	Job [2e91ba23df0b439eaa644ee5e03ba5d4] finished successfully.
+	done: true
+	driverControlFilesUri: gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/2e91ba23df0b439eaa644ee5e03ba5d4/
+	driverOutputResourceUri:gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/2e91ba23df0b439eaa644ee5e03ba5d4/driv	eroutput
+	jobUuid: 54f7b7f9-f75d-3408-9260-e22c873b53b0
+	placement:
+	  clusterName: polyglot
+	  clusterUuid: 3d809588-074e-4cfb-9586-7a45badbe52a
+	pysparkJob:
+	  mainPythonFileUri: gs://rs-bucket-dataproc1/notebooks/jupyter/Query1.py
+	  properties:
+	    spark.jars.packages: ch.cern.sparkmeasure:spark-measure_2.12:0.17
+	reference:
+	  jobId: 2e91ba23df0b439eaa644ee5e03ba5d4
+	  projectId: bright-raceway-406701
+	status:
+	  state: DONE
+	  stateStartTime: '2023-12-02T18:51:46.715976Z'
+	statusHistory:
+	- state: PENDING
+	  stateStartTime: '2023-12-02T18:49:21.318069Z'
+	- state: SETUP_DONE
+	  stateStartTime: '2023-12-02T18:49:21.357879Z'
+	- details: Agent reported job success
+	  state: RUNNING
+	  stateStartTime: '2023-12-02T18:49:21.624462Z'
+	yarnApplications:
+	- name: MyApp
+	  progress: 1.0
+	  state: FINISHED
+"""

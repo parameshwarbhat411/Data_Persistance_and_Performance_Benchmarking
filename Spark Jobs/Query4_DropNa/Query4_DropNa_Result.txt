@@ -1,0 +1,124 @@
+The Python script is run on HADOOP cluster deployed on Google Cloud DataProc with the below command
+
+	gcloud dataproc jobs submit pyspark gs://rs-bucket-dataproc1/notebooks/jupyter/Query4_DropNa.py  --cluster polyglot   --region us-central1   --properties spark.jars.packages=ch.cern.sparkmeasure:spark-		measure_2.12:0.17
+
+The python script is stored in Google's compute engine bucket
+
+The Python script Query4_DropNa.py is designed for processing and analyzing a large dataset using Apache Spark. It focuses on reading a dataset, performing drop duplicate function, and measuring the performance of these operations. Here's an overview of its functionality and the metrics it uses:
+
+Functionality Overview:
+	1. Spark Session Initialization: The script starts by initializing a Spark session, which is the entry point for using Spark's DataFrame API. This session is named "MyApp".
+	2. Reading Data: It reads a CSV file from the Hadoop Distributed File System (HDFS). The file is a dataset related to Yellow Taxi Trip data. The script infers the schema of the CSV file automatically and treats 	the first row as headers.
+	3. Data Processing: The script than drops the duplicates from the dataframe.
+	4. Result Display: After executing the dropDuplicates function, the results are displayed using the show() function. This is a common method for quickly inspecting the output of a DataFrame 	in Spark.
+
+
+Performance Metrics:
+	
+	Stage Metrics:
+		Number of Stages (1): The job comprises a single stage, which implies a more straightforward execution without complex shuffles or multiple operations requiring data redistribution.
+		Number of Tasks (1): Only one task was executed, indicating a possibly less complex computation or a smaller dataset.
+		Elapsed Time (0.4 s): The total time for job completion, which is relatively short, indicating efficient processing.
+		Executor Run Time (0.3 s) and Executor CPU Time (0.2 s): These metrics show the time spent by executors running tasks and the CPU time consumed, respectively, both indicating efficient 	execution.
+		Executor Deserialize Time (24 ms): Time taken to deserialize data on the executors, which is minimal.
+		JVM GC Time: No time was spent in garbage collection (0 ms), which is ideal as it indicates minimal memory management overhead.
+	
+	Shuffle Metrics:
+		All shuffle-related metrics (like shuffleFetchWaitTime, shuffleWriteTime, shuffleTotalBytesRead, etc.) are zero, which indicates no data shuffling was necessary for this job. This is 	typical for simpler 		tasks or tasks that don't require data redistribution across nodes.
+	
+	Resource Utilization:
+		Result Size (2.0 KB): The small size of the result indicates a lightweight operation.
+		Disk and Memory Bytes Spilled: Both are zero, indicating no spilling, which is a sign of efficient memory usage.
+		Peak Execution Memory: Zero, suggesting that the task was not memory-intensive.
+
+	Job Completion and Resource Details:
+		Job Status: The job finished successfully.
+		Resource URIs and Job Details: The details about the job's location, configuration in Google Cloud Storage and DataProc environment, and the job UUID.
+
+	
+Below is the result from the script:
+
+"""
+	+--------+--------------------+---------------------+---------------+-------------+----------+------------------+------------+------------+------------+-----------+-----+-------+----------+------------+---------------------+------------+--------------------+
+	|VendorID|tpep_pickup_datetime|tpep_dropoff_datetime|passenger_count|trip_distance|RatecodeID|store_and_fwd_flag|PULocationID|DOLocationID|payment_type|fare_amount|extra|mta_tax|tip_amount|tolls_amount|improvement_surcharge|total_amount|congestion_surcharge|
+	+--------+--------------------+---------------------+---------------+-------------+----------+------------------+------------+------------+------------+-----------+-----+-------+----------+------------+---------------------+------------+--------------------+
+	|       1|01/01/2020 12:28:...| 01/01/2020 12:33:...|              1|          1.2|         1|                 N|         238|         239|           1|        6.0|  3.0|    0.5|      1.47|         0.0|                  0.3|       11.27|                 2.5|
+	|       1|01/01/2020 12:35:...| 01/01/2020 12:43:...|              1|          1.2|         1|                 N|         239|         238|           1|        7.0|  3.0|    0.5|       1.5|         0.0|                  0.3|        12.3|                 2.5|
+	|       1|01/01/2020 12:47:...| 01/01/2020 12:53:...|              1|          0.6|         1|                 N|         238|         238|           1|        6.0|  3.0|    0.5|       1.0|         0.0|                  0.3|        10.8|                 2.5|
+	|       1|01/01/2020 12:55:...| 01/01/2020 01:00:...|              1|          0.8|         1|                 N|         238|         151|           1|        5.5|  0.5|    0.5|      1.36|         0.0|                  0.3|        8.16|                 0.0|
+	|       2|01/01/2020 12:01:...| 01/01/2020 12:04:...|              1|          0.0|         1|                 N|         193|         193|           2|        3.5|  0.5|    0.5|       0.0|         0.0|                  0.3|         4.8|                 0.0|
+	|       2|01/01/2020 12:09:...| 01/01/2020 12:10:...|              1|         0.03|         1|                 N|           7|         193|           2|        2.5|  0.5|    0.5|       0.0|         0.0|                  0.3|         3.8|                 0.0|
+	|       2|01/01/2020 12:39:...| 01/01/2020 12:39:...|              1|          0.0|         1|                 N|         193|         193|           1|        2.5|  0.5|    0.5|      0.01|         0.0|                  0.3|        3.81|                 0.0|
+	|       2|12/18/2019 03:27:...| 12/18/2019 03:28:...|              1|          0.0|         5|                 N|         193|         193|           1|       0.01|  0.0|    0.0|       0.0|         0.0|                  0.3|        2.81|                 2.5|
+	|       2|12/18/2019 03:30:...| 12/18/2019 03:31:...|              4|          0.0|         1|                 N|         193|         193|           1|        2.5|  0.5|    0.5|       0.0|         0.0|                  0.3|         6.3|                 2.5|
+	|       1|01/01/2020 12:29:...| 01/01/2020 12:40:...|              2|          0.7|         1|                 N|         246|          48|           1|        8.0|  3.0|    0.5|      2.35|         0.0|                  0.3|       14.15|                 2.5|
+	+--------+--------------------+---------------------+---------------+-------------+----------+------------------+------------+------------+------------+-----------+-----+-------+----------+------------+---------------------+------------+--------------------+
+	only showing top 10 rows
+
+	23/12/03 00:42:31 WARN package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+	23/12/03 00:42:31 WARN StageMetrics: Stage metrics data refreshed into temp view PerfStageMetrics
+
+	Scheduling mode = FAIR
+	Spark Context default degree of parallelism = 4
+	Aggregated Spark stage metrics:
+	numStages => 1
+	numTasks => 1
+	elapsedTime => 376 (0.4 s)
+	stageDuration => 376 (0.4 s)
+	executorRunTime => 308 (0.3 s)
+	executorCpuTime => 185 (0.2 s)
+	executorDeserializeTime => 24 (24 ms)
+	executorDeserializeCpuTime => 15 (15 ms)
+	resultSerializationTime => 0 (0 ms)
+	jvmGCTime => 0 (0 ms)
+	shuffleFetchWaitTime => 0 (0 ms)
+	shuffleWriteTime => 0 (0 ms)
+	resultSize => 2426 (2.0 KB)
+	diskBytesSpilled => 0 (0 Bytes)
+	memoryBytesSpilled => 0 (0 Bytes)
+	peakExecutionMemory => 0
+	recordsRead => 11
+	bytesRead => 65536 (64.0 KB)
+	recordsWritten => 0
+	bytesWritten => 0 (0 Bytes)
+	shuffleRecordsRead => 0
+	shuffleTotalBlocksFetched => 0
+	shuffleLocalBlocksFetched => 0
+	shuffleRemoteBlocksFetched => 0
+	shuffleTotalBytesRead => 0 (0 Bytes)
+	shuffleLocalBytesRead => 0 (0 Bytes)
+	shuffleRemoteBytesRead => 0 (0 Bytes)
+	shuffleRemoteBytesReadToDisk => 0 (0 Bytes)
+	shuffleBytesWritten => 0 (0 Bytes)
+	shuffleRecordsWritten => 0
+	Job [0c502c23011948a4a01e06ebd1181c0d] finished successfully.
+	done: true
+	driverControlFilesUri: gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/0c502c23011948a4a01e06ebd1181c0d/
+	driverOutputResourceUri: gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/0c502c23011948a4a01e06ebd1181c0d/driveroutput
+	jobUuid: f9740543-b93e-3ef7-a6c1-e36411c8e77a
+	placement:
+	  clusterName: polyglot
+	  clusterUuid: 3d809588-074e-4cfb-9586-7a45badbe52a
+	pysparkJob:
+	  mainPythonFileUri: gs://rs-bucket-dataproc1/notebooks/jupyter/QueryDropNA.py
+	  properties:
+	    spark.jars.packages: ch.cern.sparkmeasure:spark-measure_2.12:0.17
+	reference:
+	  jobId: 0c502c23011948a4a01e06ebd1181c0d
+	  projectId: bright-raceway-406701
+	status:
+	  state: DONE
+	  stateStartTime: '2023-12-03T00:42:39.107996Z'
+	statusHistory:
+	- state: PENDING
+	  stateStartTime: '2023-12-03T00:41:07.052840Z'
+	- state: SETUP_DONE
+	  stateStartTime: '2023-12-03T00:41:07.089555Z'
+	- details: Agent reported job success
+	  state: RUNNING
+	  stateStartTime: '2023-12-03T00:41:07.342908Z'
+	yarnApplications:
+	- name: MyApp
+	  progress: 1.0
+	  state: FINISHED
+"""

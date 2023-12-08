@@ -1,0 +1,111 @@
+The Python script is run on HADOOP cluster deployed on Google Cloud DataProc with the below command
+
+	gcloud dataproc jobs submit pyspark gs://rs-bucket-dataproc1/notebooks/jupyter/Query1_With_24Million.py  --cluster polyglot   --region us-central1   --properties spark.jars.packages=ch.cern.sparkmeasure:spark-	measure_2.12:0.17
+
+The python script is stored in Google's compute engine bucket
+
+The Python script Query1_With_24Million.py is designed for processing and analyzing a large dataset using Apache Spark. It focuses on reading a dataset, performing SQL queries, and measuring the performance of these operations. Here's an overview of its functionality and the metrics it uses:
+
+Functionality Overview:
+	1. Spark Session Initialization: The script starts by initializing a Spark session, which is the entry point for using Spark's DataFrame API. This session is named "MyApp".
+	2. Reading Data: It reads a CSV file from the Hadoop Distributed File System (HDFS). The file is a dataset related to Yellow Taxi Trip data. The script infers the schema of the CSV file automatically and treats 	the first row as headers.( Data contains 24 million records)
+	3. Data Processing with SQL: The script then creates a temporary view of the data, allowing it to run SQL queries directly on the dataset. The specific SQL query executed calculates the average fare 	amount g	-rouped by the number of passengers.
+	4. Result Display: After executing the SQL query, the results are displayed using the show() function. This is a common method for quickly inspecting the output of a DataFrame in Spark.
+
+Performance Metrics:
+The performance metrics in the script, as gathered by sparkmeasure's StageMetrics, are crucial for understanding the efficiency and effectiveness of your Spark application. These metrics give insights into how well the application is performing and where there might be bottlenecks or areas for improvement.
+	
+	1. Scheduling Mode - FAIR: Spark supports two types of scheduling modes: FIFO (First In First Out) and FAIR. The FAIR mode allows Spark to share resources fairly across all jobs running concurrently. This mode is 	beneficial when running multiple jobs simultaneously, as it ensures that no single job monopolizes shared resources. However, this might lead to longer overall completion times for individual jobs compared to 	FIFO, where jobs are completed one after another.
+
+	2. Default Degree of Parallelism - 4: This metric indicates that the Spark context is set to execute tasks in parallel across four threads. The degree of parallelism is a key factor in the performance of Spark 	applications. It needs to be optimized based on the data size and the cluster's hardware capabilities (like the number of cores). Improper parallelism settings can lead to either underutilization of 	resources 	(if too low) or increased overhead and contention (if too high).
+
+	3. Number of Stages and Tasks: Spark applications are divided into stages, and each stage is further divided into tasks. The number of stages and tasks directly impacts the application's performance. More stages 	usually mean more shuffles (data redistribution across different nodes), which can be costly in terms of performance. The number of tasks should ideally match the cluster's parallelism capabilities to ensure 	efficient resource utilization.
+
+	4. Truncated Plan Warning: This warning indicates that the execution plan for the Spark job is complex and large, leading to its truncation in logs. A complex execution plan might be a sign of a complicated 	data 	transformation process or inefficient query. Simplifying the execution plan can lead to better performance, as it can reduce the computational overhead and the need for shuffles.
+
+	Below is the result that we get from the script
+"""
+
+	+---------------+------------------+
+	|passenger_count|      average_fare|
+	+---------------+------------------+
+	|              1|12.018164245330754|
+	|              6|11.932876337344927|
+	|              3|12.999184766540846|
+	|              5|11.871313216773821|
+	|              9|  51.9743137254902|
+	|              4|12.699320343301869|
+	|              8| 50.05396551724138|
+	|              7|  53.3821978021978|
+	|              2|12.606621704781505|
+	|              0|11.664049949017018|
+	+---------------+------------------+
+
+	23/12/02 18:38:07 WARN package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+	23/12/02 18:38:07 WARN StageMetrics: Stage metrics data refreshed into temp view PerfStageMetrics
+
+	Scheduling mode = FAIR
+	Spark Context default degree of parallelism = 4
+	Aggregated Spark stage metrics:
+	numStages => 2
+	numTasks => 19
+	elapsedTime => 22640 (23 s)
+	stageDuration => 22333 (22 s)
+	executorRunTime => 83015 (1.4 min)
+	executorCpuTime => 69770 (1.2 min)
+	executorDeserializeTime => 1568 (2 s)
+	executorDeserializeCpuTime => 675 (0.7 s)
+	resultSerializationTime => 1 (1 ms)
+	jvmGCTime => 523 (0.5 s)
+	shuffleFetchWaitTime => 0 (0 ms)
+	shuffleWriteTime => 371 (0.4 s)
+	resultSize => 50713 (49.0 KB)
+	diskBytesSpilled => 0 (0 Bytes)
+	memoryBytesSpilled => 0 (0 Bytes)
+	peakExecutionMemory => 1212677856
+	recordsRead => 24648499
+	bytesRead => 2395378313 (2.0 GB)
+	recordsWritten => 0
+	bytesWritten => 0 (0 Bytes)
+	shuffleRecordsRead => 196
+	shuffleTotalBlocksFetched => 18
+	shuffleLocalBlocksFetched => 9
+	shuffleRemoteBlocksFetched => 9
+	shuffleTotalBytesRead => 13855 (13.0 KB)
+	shuffleLocalBytesRead => 6923 (6.0 KB)
+	shuffleRemoteBytesRead => 6932 (6.0 KB)
+	shuffleRemoteBytesReadToDisk => 0 (0 Bytes)
+	shuffleBytesWritten => 13855 (13.0 KB)
+	shuffleRecordsWritten => 196
+	Job [082fbda353034c24b69c8a2ea5f3a040] finished successfully.
+	done: true
+	driverControlFilesUri: gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/082fbda353034c24b69c8a2ea5f3a040/
+	driverOutputResourceUri:gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/082fbda353034c24b69c8a2ea5f3a040/driveroutput
+	jobUuid: 90305ef6-7c19-3e0e-9673-355d0e02b99d
+	placement:
+	  clusterName: polyglot
+	  clusterUuid: 3d809588-074e-4cfb-9586-7a45badbe52a
+	pysparkJob:
+	  mainPythonFileUri: gs://rs-bucket-dataproc1/notebooks/jupyter/Final.py
+	  properties:
+	    spark.jars.packages: ch.cern.sparkmeasure:spark-measure_2.12:0.17
+	reference:
+	  jobId: 082fbda353034c24b69c8a2ea5f3a040
+	  projectId: bright-raceway-406701
+	status:
+	  state: DONE
+	  stateStartTime: '2023-12-02T18:38:11.357583Z'
+	statusHistory:
+	- state: PENDING
+	  stateStartTime: '2023-12-02T18:36:22.390685Z'
+	- state: SETUP_DONE
+	  stateStartTime: '2023-12-02T18:36:22.432189Z'
+	- details: Agent reported job success
+	  state: RUNNING
+	  stateStartTime: '2023-12-02T18:36:22.657173Z'
+	yarnApplications:
+	- name: MyApp
+	  progress: 1.0
+	  state: FINISHED
+  
+"""

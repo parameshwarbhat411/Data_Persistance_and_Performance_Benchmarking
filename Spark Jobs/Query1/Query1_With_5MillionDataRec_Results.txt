@@ -1,0 +1,139 @@
+The Python script is run on HADOOP cluster deployed on Google Cloud DataProc with the below command
+
+	gcloud dataproc jobs submit pyspark gs://rs-bucket-dataproc1/notebooks/jupyter/Query1_With_5Million.py  --cluster polyglot   --region us-central1   --properties spark.jars.packages=ch.cern.sparkmeasure:spark-	measure_2.12:0.17
+
+The python script is stored in Google's compute engine bucket
+
+The Python script Query1_With_5Million.py is designed for processing and analyzing a large dataset using Apache Spark. It focuses on reading a dataset, performing SQL queries, and measuring the performance of these operations. Here's an overview of its functionality and the metrics it uses:
+
+Functionality Overview:
+	1. Spark Session Initialization: The script starts by initializing a Spark session, which is the entry point for using Spark's DataFrame API. This session is named "MyApp".
+	2. Reading Data: It reads a CSV file from the Hadoop Distributed File System (HDFS). The file is a dataset related to Yellow Taxi Trip data, and it's limited to 5 million rows for processing. The script infers 	the schema of the CSV file automatically and treats the first row as headers.
+	3. Data Processing with SQL: The script then creates a temporary view of the data, allowing it to run SQL queries directly on the dataset. The specific SQL query executed calculates the average fare amount 		grouped by the number of passengers.
+	4. Result Display: After executing the SQL query, the results are displayed using the show() function. This is a common method for quickly inspecting the output of a DataFrame in Spark.
+
+Performance Metrics:
+The performance metrics in the script, as gathered by spark measure's StageMetrics, are crucial for understanding the efficiency and effectiveness of your Spark application. These metrics give insights into how well the application is performing and where there might be bottlenecks or areas for improvement.
+	
+	Scheduling Mode and Parallelism:
+		- FAIR Scheduling Mode: This mode ensures resources are fairly shared among all running jobs, which is beneficial for multi-job workloads.
+		- Degree of Parallelism (4): The application is set to run tasks across four parallel threads. This setting impacts how effectively the application utilizes available resources.
+	
+	Stage Metrics:
+		- Number of Stages (2): The job is divided into two stages, which are sets of tasks that can be executed together.
+		- Number of Tasks (19): Indicates the total number of tasks executed across all stages.
+		- Elapsed Time (26 s): Total time taken for the job to complete.
+		- Stage Duration (26 s): The total time taken by all stages to execute.
+		- Executor Run Time (1.5 min): Cumulative time spent by all executors running tasks.
+		- Executor CPU Time (1.4 min): Total CPU time spent by all executors to run tasks, indicating CPU resource utilization.
+	
+	Executor Metrics:
+		- Executor Deserialize Time (0.9 s): Time taken to deserialize data on executors.
+		- Executor Deserialize CPU Time (0.4 s): CPU time taken for deserialization on executors.
+		- Result Serialization Time (6 ms): Time taken to serialize task results.
+		- JVM GC Time (0.3 s): Time spent in Java's Garbage Collection processes, indicating memory management overhead.
+	
+	Shuffle Metrics:
+		- Shuffle Read/Write Time: Time taken for shuffle read (0 ms) and write (0.6 s) operations, crucial in stages where data is redistributed.
+		- Shuffle Records Read/Written: Number of records read (184,366) and written (24,648,499) during shuffle operations, reflecting data movement between stages.
+		- Shuffle Total Bytes Read/Written: The volume of data read (26.0 MB) and written (117.0 MB) during shuffle operations, indicating the extent of data transfer.
+	
+	Data Size and IO Metrics:
+		- Records Read (24,648,499): Total records processed by the job.
+		- Bytes Read (2.0 GB): Total data read by the job, indicating the volume of input data.
+		- Disk/Memory Bytes Spilled (0 Bytes): Indicates no spilling to disk or memory occurred, which is a positive sign for performance.
+	
+	Resource Usage Metrics:
+		- Peak Execution Memory: The highest amount of memory used during execution.
+		- No Spillage of Data to Disk/Memory: Indicates efficient memory management.
+	
+	Job and Application Details:
+		- The job is marked as successfully finished.
+		- Details about the job's location and configuration are provided, including references to Google Cloud Storage (gs://) paths and the cluster information.
+
+	Below is the result that we get from the script
+	
+"""
+	+---------------+------------------+
+	|passenger_count|      average_fare|
+	+---------------+------------------+
+	|              1|11.959153185313182|
+	|              2|12.497150348759456|
+	|              5|11.802468650288231|
+	|              3|12.257325407936111|
+	|              0|11.569796492624294|
+	|              4|12.688628709306613|
+	|              6|11.891800021050415|
+	|              8|42.300000000000004|
+	|              9|60.408181818181816|
+	|              7|53.993333333333325|
+	+---------------+------------------+
+
+	23/12/02 18:07:58 WARN package: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+	23/12/02 18:07:58 WARN StageMetrics: Stage metrics data refreshed into temp view PerfStageMetrics
+
+	Scheduling mode = FAIR
+	Spark Context default degree of parallelism = 4
+	Aggregated Spark stage metrics:
+	numStages => 2
+	numTasks => 19
+	elapsedTime => 26449 (26 s)
+	stageDuration => 26035 (26 s)
+	executorRunTime => 91971 (1.5 min)
+	executorCpuTime => 82111 (1.4 min)
+	executorDeserializeTime => 901 (0.9 s)
+	executorDeserializeCpuTime => 436 (0.4 s)
+	resultSerializationTime => 6 (6 ms)
+	jvmGCTime => 313 (0.3 s)
+	shuffleFetchWaitTime => 0 (0 ms)
+	shuffleWriteTime => 550 (0.6 s)
+	resultSize => 33710 (32.0 KB)
+	diskBytesSpilled => 0 (0 Bytes)
+	memoryBytesSpilled => 0 (0 Bytes)
+	peakExecutionMemory => 134741984
+	recordsRead => 24648499
+	bytesRead => 2395378313 (2.0 GB)
+	recordsWritten => 0
+	bytesWritten => 0 (0 Bytes)
+	shuffleRecordsRead => 184366
+	shuffleTotalBlocksFetched => 4
+	shuffleLocalBlocksFetched => 4
+	shuffleRemoteBlocksFetched => 0
+	shuffleTotalBytesRead => 27869813 (26.0 MB)
+	shuffleLocalBytesRead => 27869813 (26.0 MB)
+	shuffleRemoteBytesRead => 0 (0 Bytes)
+	shuffleRemoteBytesReadToDisk => 0 (0 Bytes)
+	shuffleBytesWritten => 123693489 (117.0 MB)
+	shuffleRecordsWritten => 24648499
+	Job [9fc1166b7d924d8287e254d3741c3d4c] finished successfully.
+	done: true
+	driverControlFilesUri: gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/9fc1166b7d924d8287e254d3741c3d4c/
+	driverOutputResourceUri:gs://dataproc-staging-us-central1-978426421624-qtjq5mh8/google-cloud-dataproc-metainfo/3d809588-074e-4cfb-9586-7a45badbe52a/jobs/9fc1166b7d924d8287e254d3741c3d4c/driv	eroutput
+	jobUuid: 03582925-ac60-35e1-86f7-95eead187144
+	placement:
+	  clusterName: polyglot
+	  clusterUuid: 3d809588-074e-4cfb-9586-7a45badbe52a
+	pysparkJob:
+	  mainPythonFileUri: gs://rs-bucket-dataproc1/notebooks/jupyter/Final100.py
+	  properties:
+	    spark.jars.packages: ch.cern.sparkmeasure:spark-measure_2.12:0.17
+	reference:
+	  jobId: 9fc1166b7d924d8287e254d3741c3d4c
+	  projectId: bright-raceway-406701
+	status:
+	  state: DONE
+	  stateStartTime: '2023-12-02T18:08:01.532243Z'
+	statusHistory:
+	- state: PENDING
+	  stateStartTime: '2023-12-02T18:06:11.034064Z'
+	- state: SETUP_DONE
+	  stateStartTime: '2023-12-02T18:06:11.071628Z'
+	- details: Agent reported job success
+	  state: RUNNING
+	  stateStartTime: '2023-12-02T18:06:11.321454Z'
+	yarnApplications:
+	- name: MyApp
+	  progress: 1.0
+	  state: FINISHED
+  
+"""
